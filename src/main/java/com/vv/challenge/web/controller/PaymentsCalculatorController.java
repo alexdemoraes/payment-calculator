@@ -1,33 +1,32 @@
 package com.vv.challenge.web.controller;
 
+import com.vv.challenge.service.PaymentsCalculatorService;
 import com.vv.challenge.web.model.PaymentViewModel;
+import com.vv.challenge.web.model.PaymentsRequestViewModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 @RestController
-@RequestMapping("calculator")
+@RequestMapping(value="calculator",
+        consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+        produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class PaymentsCalculatorController {
 
-    @GetMapping("/calculatePayments")
-    public ResponseEntity<List<PaymentViewModel>> calculatePayments() {
-        return new ResponseEntity<>(dummyList(), HttpStatus.OK);
+    @Autowired
+    private PaymentsCalculatorService service;
+
+    @PostMapping("/calculatePayments")
+    public ResponseEntity<List<PaymentViewModel>> calculatePayments(
+            @RequestBody PaymentsRequestViewModel viewModel) {
+        return new ResponseEntity<>(service.calculatePayments(), HttpStatus.OK);
     }
 
-
-    private List<PaymentViewModel> dummyList() {
-        List<PaymentViewModel> list = new ArrayList<>();
-        IntStream.range(1, 6).forEach(value ->
-                list.add(new PaymentViewModel(value, new BigDecimal(value * 1000), new BigDecimal(value / 100)))
-        );
-        return list;
-    }
 }
